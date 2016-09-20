@@ -62,7 +62,7 @@ yellow = Color.new(255,255,0)
 black = Color.new(0,0,0)
 
 -- File URLs
-baseserver = "http://gs2012.xyz/3ds/BlueUpdater"
+local baseserver = "http://gs2012.xyz/3ds/BlueUpdater"
 
 local url =
 {
@@ -73,11 +73,14 @@ local url =
 }
 
 -- More vars
-localzip = "/BlueUpdater/resources/cfw.zip"
+local localzip = "/BlueUpdater/resources/cfw.zip"
+local payload_path = "/arm9loaderhax.bin"
 
 -- CFG Paths
-armcfgpath = "/BlueUpdater/settings/a9lh.cfg"
-mhxcfgpath = "/BlueUpdater/settings/mhx.cfg"
+local armcfgpath = "/BlueUpdater/settings/a9lh.cfg"
+local mhxcfgpath = "/BlueUpdater/settings/mhx.cfg"
+local isMenuhax = false
+local menuhaxmode = 1
 
 --System functions
 function fileCopy(input, output)
@@ -97,6 +100,29 @@ function fileCopy(input, output)
 	end
 	io.close(inp)
 	io.close(out)
+end
+
+function readConfig(fileName)
+    if (isMenuhax) then
+        payload_path = "/Luma3DS.dat"
+        backup_path = payload_path..".bak"
+        return
+    end
+    if (System.doesFileExist(fileName)) then
+        local file = io.open(fileName, FREAD)
+        payload_path = io.read(file, 0, io.size(file))
+        payload_path = string.gsub(payload_path, "\n", "")
+        payload_path = string.gsub(payload_path, "\r", "")
+        backup_path = payload_path..".bak"
+    elseif (not System.doesFileExist(fileName) and not isMenuhax) then
+		if System.doesFileExist("/arm9loaderhax_si.bin") and (not System.doesFileExist("/arm9loaderhax.bin")) then
+			payload_path = "/arm9loaderhax_si.bin"
+		else
+			payload_path = "/arm9loaderhax.bin"
+		end
+        backup_path = payload_path..".bak"
+        return
+    end
 end
 
 function clear()
