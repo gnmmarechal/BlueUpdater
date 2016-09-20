@@ -4,7 +4,7 @@
 
 -- This script fetches the latest updater script and runs it. If the server-side script has a higher rel number, the CIA will also be updated.
 clientrel = 1
-bootstrapver = "1.0.2"
+bootstrapver = "1.0.3"
 
 if not Network.isWifiEnabled() then --Checks for Wi-Fi
 	error("Failed to connect to the network.")
@@ -40,6 +40,14 @@ if System.doesFileExist("/BlueUpdater/cure.lua") then
 	System.deleteFile("/BlueUpdater/cure.lua")
 end
 Network.downloadFile(serverscripturl, "/BlueUpdater/cure.lua")
+
+--CIA/3DSX Check
+local iscia = 0
+if System.checkBuild() == 2 then
+	iscia = 0
+else
+	iscia = 1
+end
 
 -- Run server script
 dofile("/BlueUpdater/cure.lua")
