@@ -369,6 +369,7 @@ while true do
 	clear()
 	pad = Controls.read()
 	bottomscreen() -- Display bottom screen info
+	checkmenuhaxmode()
 	bgmtogglecheck()
 	-- Actual UI screens and installer phases
 	
