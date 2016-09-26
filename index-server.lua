@@ -228,14 +228,25 @@ function installcfw(dlurl)
 		if isMenuhax == 0 then
 			System.extractFromZIP(localzip, "out/arm9loaderhax.bin", payload_path)
 			System.deleteFile(localzip)
-		else
-			System.extractFromZIP(localzip, "out/Luma3DS.dat", "/Luma3DS.dat")
+		elseif isMenuhax == 1 then
+			System.deleteFile("/3ds/Luma3DS/Luma3DS.3dsx")
+			System.deleteFile("/3ds/Luma3DS/Luma3DS.smdh")
+			System.extractFromZIP(localzip, "out/hax/Luma3DS/Luma3DS.3dsx", "/3ds/Luma3DS/Luma3DS.3dsx")
+			System.extractFromZIP(localzip, "out/hax/Luma3DS/Luma3DS.smdh", "/3ds/Luma3DS/Luma3DS.smdh")			
 			if System.doesFileExist("/arm9loaderhax.bin") then
 				System.deleteFile("/arm9loaderhax.bin")
 			end
 			System.extractFromZIP(localzip, "out/arm9loaderhax.bin", "/arm9loaderhax.bin")
 			System.deleteFile(localzip)
-		end	
+		elseif isMenuhax == 2 then
+			System.deleteFile("/boot.3dsx")
+			System.extractFromZIP(localzip, "out/menuhax/Luma3DS.3dsx", "/boot.3dsx")			
+			if System.doesFileExist("/arm9loaderhax.bin") then
+				System.deleteFile("/arm9loaderhax.bin")
+			end
+			System.extractFromZIP(localzip, "out/arm9loaderhax.bin", "/arm9loaderhax.bin")
+			System.deleteFile(localzip)
+		end
 	end
 	if isMenuhax == 0 then
 		debugWrite(0, 120, "Changing path for reboot patch...", red, TOP_SCREEN)
@@ -264,9 +275,10 @@ function checkmenuhaxmode() -- Checks whether to keep config or not and sets the
 
 	if isMenuhax == 1 then
 
-		modename = "MenuHax"
-
-	else
+		modename = "MenuHax (1)"
+	elseif isMenuhax == 2 then
+		modename = "MenuHax (2)"
+	elseif isMenuhax == 0 then
 
 		modename = "Arm9LoaderHax"
 
@@ -274,25 +286,13 @@ function checkmenuhaxmode() -- Checks whether to keep config or not and sets the
 
 	if Controls.check(pad, KEY_R) and not Controls.check(oldpad, KEY_R) then
 
-		if isMenuhax == 1 then
+		if isMenuhax <2 then
 
-			isMenuhax = 0
-
-			-- Delete config setting for this option
-
-			System.deleteFile("/BlueUpdater/settings/menuhax")
+			isMenuhax = isMenuhax + 1
 
 		else
 			
-			isMenuhax = 1
-
-			-- Create config option for this option to be saved upon exit and restart
-
-			confsettingstream = io.open("/BlueUpdater/settings/menuhax",FCREATE)
-
-			io.write(confsettingstream,0,"Keep Config", 11)
-
-			io.close(confsettingstream)
+			isMenuhax = 0
 
 		end
 
